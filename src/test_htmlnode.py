@@ -4,24 +4,27 @@ from htmlnode import HTMLNode
 
 
 class TestHTMLNode(unittest.TestCase):
-    def test_eq(self):
-        node = TextNode("This is a text node", TextType.BOLD)
-        node2 = TextNode("This is a text node", TextType.BOLD)
-        self.assertEqual(node, node2)
 
-    def test_neq(self):
-        node = TextNode("This is a text node", TextType.BOLD)
-        node2 = TextNode("This is not  a text node", TextType.ITALIC)
-        self.assertNotEqual(node, node2)
+    def test_props_to_html(self):
+        node = HTMLNode("p", "yo yo yo", None,
+                        {
+                            "href": "https://www.google.com",
+                            "target": "_blank", }
+                        )
+        self.assertEqual(node.props_to_html(), ' '.join(f'{k}="{v}"' for k, v in node.props.items()))
 
-    def test_str(self):
-        node = TextNode("This is a text node", TextType.BOLD)
-        self.assertEqual(str(node), "TextNode(This is a text node, bold, None)")
+    def test_props_to_html2(self):
+        node = HTMLNode("p", "yo yo yo", None,
+                        {
+                            "href": "website.com",
+                            "target": "_null", }
+                        )
+        self.assertEqual(node.props_to_html(), ' '.join(f'{k}="{v}"' for k, v in node.props.items()))
 
-    def test_neq2(self):
-        node = TextNode("This is a text node", TextType.LINK)
-        node2 = TextNode("This is not  a text node", TextType.LINK, "https://www.boot.dev")
-        self.assertNotEqual(node, node2)
+    def test___repr__(self):
+        node = HTMLNode("p", "yo yo yo", None, )
+        print(repr(node))
+
 
 if __name__ == "__main__":
     unittest.main()
