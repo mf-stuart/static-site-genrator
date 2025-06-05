@@ -10,7 +10,7 @@ class LeafNode(HTMLNode):
         if self.tag is None:
             return self.value
         return (f'<{self.tag}'
-                f'{f" {list(self.props.keys())[0]}=\"{list(self.props.values())[0]}\"" if self.props is not None else ''  }>'
+                f'{(" " + " ".join(f"{k}=\"{v}\"" for k,v in self.props.items())) if self.props is not None else ""}>'
                 f'{self.value}</{self.tag}>')
 
     def __repr__(self):
