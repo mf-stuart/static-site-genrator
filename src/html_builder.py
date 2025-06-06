@@ -1,3 +1,4 @@
+import os
 import re
 import inline_markdown
 import block_markdown
@@ -6,7 +7,19 @@ from parentnode import ParentNode
 import textnode
 from textnode import TextNode, TextType
 
+def generate_pages_recursive(content_dir, template_dir, dst_dir):
+    for fn in os.listdir(content_dir):
+        if os.path.isdir(os.path.join(content_dir, fn)):
+            generate_pages_recursive(os.path.join(content_dir, fn), template_dir, os.path.join(dst_dir, fn))
+        else:
+            destination_file = fn.replace(".md", ".html")
+            generate_page(os.path.join(content_dir, fn), template_dir, os.path.join(dst_dir, destination_file))
+
+
+
 def generate_page(src, template_path, dst):
+    src = os.path.normpath(src)
+    dst = os.path.normpath(dst)
     print(f"Generating page from {src} to {dst} using {template_path}")
 
     with open(src, "r") as f:
@@ -20,6 +33,9 @@ def generate_page(src, template_path, dst):
 
     template = re.sub(r"\{\{ Title }}", page_title, template)
     template = re.sub(r"\{\{ Content }}", content_html_string, template)
+
+    if not os.path.exists(dst):
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
 
     with open(dst, "w") as f:
         f.write(template)

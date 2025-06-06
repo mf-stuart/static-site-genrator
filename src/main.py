@@ -1,6 +1,7 @@
 import os
 import shutil
-from html_builder import generate_page
+from html_builder import generate_page, generate_pages_recursive
+
 
 def copy_dir(src, dst):
     for fn in os.listdir(src):
@@ -13,7 +14,6 @@ def copy_dir(src, dst):
             copy_dir(fn_path, dst_path)
 
 def stage_public():
-    print(os.getcwd())
     static_path = os.path.join("static")
     public_path = os.path.join("public")
 
@@ -23,8 +23,10 @@ def stage_public():
     copy_dir(static_path, public_path)
 
 def main():
+    print(os.getcwd())
     stage_public()
-    generate_page("content/index.md", "template.html", "public/index.html")
+    generate_pages_recursive("content", "template.html", "public")
+
 
 
 

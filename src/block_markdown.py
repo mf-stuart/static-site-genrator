@@ -48,7 +48,7 @@ def block_type_to_tag(block_type):
         case BlockType.CODE:
             return "code"
         case BlockType.QUOTE:
-            return "q"
+            return "blockquote"
         case BlockType.UNORDERED_LIST:
             return "ul"
         case BlockType.ORDERED_LIST:
@@ -87,7 +87,7 @@ def trim_text(text):
         case BlockType.HEADING:
             return re.sub(r"^#{1,6} ", "", text, flags=re.MULTILINE)
         case BlockType.QUOTE:
-            return re.sub(r"^>", "", text, flags=re.MULTILINE)
+            return re.sub(r"^> ?", "", text, flags=re.MULTILINE)
         case BlockType.UNORDERED_LIST:
             return re.sub(r"^- ", "", text, flags=re.MULTILINE)
         case BlockType.ORDERED_LIST:
