@@ -7,17 +7,17 @@ from parentnode import ParentNode
 import textnode
 from textnode import TextNode, TextType
 
-def generate_pages_recursive(content_dir, template_dir, dst_dir):
+def generate_pages_recursive(content_dir, template_dir, dst_dir, basepath):
     for fn in os.listdir(content_dir):
         if os.path.isdir(os.path.join(content_dir, fn)):
-            generate_pages_recursive(os.path.join(content_dir, fn), template_dir, os.path.join(dst_dir, fn))
+            generate_pages_recursive(os.path.join(content_dir, fn), template_dir, os.path.join(dst_dir, fn), basepath)
         else:
             destination_file = fn.replace(".md", ".html")
-            generate_page(os.path.join(content_dir, fn), template_dir, os.path.join(dst_dir, destination_file))
+            generate_page(os.path.join(content_dir, fn), template_dir, os.path.join(dst_dir, destination_file), basepath)
 
 
 
-def generate_page(src, template_path, dst):
+def generate_page(src, template_path, dst, basepath):
     src = os.path.normpath(src)
     dst = os.path.normpath(dst)
     print(f"Generating page from {src} to {dst} using {template_path}")
@@ -31,8 +31,10 @@ def generate_page(src, template_path, dst):
     content_html_string = content_html_node.to_html()
     page_title = extract_title(content)
 
-    template = re.sub(r"\{\{ Title }}", page_title, template)
-    template = re.sub(r"\{\{ Content }}", content_html_string, template)
+    template = template.replace("{{ Title }}", page_title)
+    template = template.replace("{{ Content }}", content_html_string)
+    template = template.replace('href="/', f'href="{basepath}')
+    template = template.replace('src="/', f'src="{basepath}')
 
     if not os.path.exists(dst):
         os.makedirs(os.path.dirname(dst), exist_ok=True)

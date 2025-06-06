@@ -1,5 +1,7 @@
 import os
 import shutil
+import sys
+
 from html_builder import generate_page, generate_pages_recursive
 
 
@@ -15,17 +17,21 @@ def copy_dir(src, dst):
 
 def stage_public():
     static_path = os.path.join("static")
-    public_path = os.path.join("public")
+    public_path = os.path.join("docs")
 
     if os.path.exists(public_path):
         shutil.rmtree(public_path)
-    os.mkdir("public")
+    os.mkdir("docs")
     copy_dir(static_path, public_path)
 
 def main():
-    print(os.getcwd())
+    try:
+        basepath = sys.argv[1]
+    except IndexError:
+        print("basepath didnt work")
+        basepath = "/"
     stage_public()
-    generate_pages_recursive("content", "template.html", "public")
+    generate_pages_recursive("content", "template.html", "docs", basepath)
 
 
 
