@@ -120,9 +120,6 @@ class TestBlockMarkdown(unittest.TestCase):
         self.assertNotEqual(BlockType.ORDERED_LIST, block_to_block_type(block))
         self.assertEqual(BlockType.PARAGRAPH, block_to_block_type(block))
 
-
-
-
 if __name__ == "__main__":
     unittest.main()
 

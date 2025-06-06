@@ -9,14 +9,19 @@ class BlockType(Enum):
     UNORDERED_LIST = "unordered_list"
     ORDERED_LIST = "ordered_list"
     LIST_ITEM = "list_item"
-    NESTED_TAGS = (UNORDERED_LIST, ORDERED_LIST, CODE)
+
+NESTED_TAGS = {
+    BlockType.UNORDERED_LIST,
+    BlockType.ORDERED_LIST,
+    BlockType.CODE,
+}
 
 def markdown_to_blocks(text):
     block_strings = []
     raw_blocks = text.split("\n\n")
     for rb in raw_blocks:
         if rb:
-            text = re.sub(r"(\n(?:\t| {0,4}))", "\n", rb.strip())
+            text = re.sub(r"(\n[\t ]+)", "\n", rb.strip())
             block_strings.append(text)
     return block_strings
 
@@ -67,7 +72,6 @@ def block_to_type_and_tag(block):
     return block_type, tag
 
 def nested_block_type_to_outer_inner_tags(block_type):
-
     match block_type:
         case BlockType.UNORDERED_LIST:
             return ("ul", "li")
@@ -81,13 +85,13 @@ def nested_block_type_to_outer_inner_tags(block_type):
 def trim_text(text):
     match block_to_block_type(text):
         case BlockType.HEADING:
-            return re.sub(r"^#{1,6} ", "", text, re.MULTILINE)
+            return re.sub(r"^#{1,6} ", "", text, flags=re.MULTILINE)
         case BlockType.QUOTE:
-            return re.sub(r"^>", "", text, re.MULTILINE)
+            return re.sub(r"^>", "", text, flags=re.MULTILINE)
         case BlockType.UNORDERED_LIST:
-            return re.sub(r"^- ", "", text, re.MULTILINE)
+            return re.sub(r"^- ", "", text, flags=re.MULTILINE)
         case BlockType.ORDERED_LIST:
-            return re.sub(r"^\d+\. ", "", text, re.MULTILINE)
+            return re.sub(r"^\d+\. ", "", text, flags=re.MULTILINE)
         case BlockType.CODE:
             return re.sub(r"(`{3}\s?)", "", text)
         case BlockType.PARAGRAPH:
@@ -96,7 +100,7 @@ def trim_text(text):
             return text
 
 def is_nested_block_type(block_type):
-    if block_type in BlockType.NESTED_TAGS.value:
+    if block_type in NESTED_TAGS:
         return True
     return False
 

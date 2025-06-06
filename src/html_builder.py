@@ -1,3 +1,4 @@
+import re
 import inline_markdown
 import block_markdown
 from block_markdown import BlockType
@@ -5,13 +6,38 @@ from parentnode import ParentNode
 import textnode
 from textnode import TextNode, TextType
 
+def generate_page(src, template_path, dst):
+    print(f"Generating page from {src} to {dst} using {template_path}")
+
+    with open(src, "r") as f:
+        content = f.read()
+    with open(template_path, "r") as f:
+        template = f.read()
+
+    content_html_node = markdown_to_html_node(content)
+    content_html_string = content_html_node.to_html()
+    page_title = extract_title(content)
+
+    template = re.sub(r"\{\{ Title }}", page_title, template)
+    template = re.sub(r"\{\{ Content }}", content_html_string, template)
+
+    with open(dst, "w") as f:
+        f.write(template)
+        print(f"Wrote to {dst}")
+
+def extract_title(markdown):
+        captured = re.search(r"(?<=^# ).+(?=\n|$)", markdown, re.MULTILINE)
+        if not captured:
+            raise ValueError("invalid markdown, not h1 found")
+        else:
+            return captured.group().strip()
+
 def markdown_to_html_node(markdown_string):
     root = ParentNode("div", [])
     blocks = block_markdown.markdown_to_blocks(markdown_string)
     for block in blocks:
         if block:
             root.children.append(block_text_to_children(block))
-    print(root.to_html())
     return root
 
 def block_text_to_children(block):
